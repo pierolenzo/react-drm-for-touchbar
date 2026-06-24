@@ -199,6 +199,7 @@ detect_pkg_manager() {
     *fedora*) PKG_MANAGER=dnf; DISTRO_FAMILY=fedora ;;
     *debian*|*ubuntu*|*kubuntu*|*linuxmint*|*pop*|*elementary*) PKG_MANAGER=apt; DISTRO_FAMILY=debian ;;
     *arch*|*cachy*|*endeavouros*|*manjaro*) PKG_MANAGER=pacman; DISTRO_FAMILY=arch ;;
+    *gentoo*) PKG_MANAGER=emerge; DISTRO_FAMILY=gentoo ;;
     *) DISTRO_FAMILY=unknown ;;
   esac
 }
@@ -256,6 +257,7 @@ detect_required_commands() {
       command -v apt-cache >/dev/null 2>&1 || ANALYSIS_MISSING_COMMANDS+=("apt-cache")
       ;;
     pacman) command -v pacman >/dev/null 2>&1 || ANALYSIS_MISSING_COMMANDS+=("pacman") ;;
+    emerge) command -v emerge >/dev/null 2>&1 || ANALYSIS_MISSING_COMMANDS+=("emerge") ;;
   esac
 }
 
@@ -346,17 +348,35 @@ pkg_installed() {
     dnf) rpm -q "$1" >/dev/null 2>&1 ;;
     apt) dpkg -s "$1" >/dev/null 2>&1 ;;
     pacman) pacman -Q "$1" >/dev/null 2>&1 ;;
+    emerge)
+      local pattern
+      if [[ "$1" == */* ]]; then
+        pattern="/var/db/pkg/$1-[0-9]*"
+      else
+        pattern="/var/db/pkg/*/$1-[0-9]*"
+      fi
+      local d
+      for d in $pattern; do
+        [[ -d "$d" ]] && return 0
+      done
+      return 1
+      ;;
     *) return 1 ;;
   esac
 }
 
 detect_package_sets() {
-  NEEDED_RUNTIME_PACKAGES=("${COMMON_RUNTIME_PACKAGES[@]}")
+  if [[ "$DISTRO_FAMILY" == gentoo ]]; then
+    NEEDED_RUNTIME_PACKAGES=(app-misc/brightnessctl media-sound/cava)
+  else
+    NEEDED_RUNTIME_PACKAGES=("${COMMON_RUNTIME_PACKAGES[@]}")
+  fi
   NEEDED_BACKEND_PACKAGES=()
   case "$DISTRO_FAMILY" in
     fedora) NEEDED_BUILD_PACKAGES=(nodejs22-bin nodejs22-npm-bin python3 gcc gcc-c++ make pkgconf-pkg-config systemd-devel libdrm-devel cairo-devel librsvg2-devel) ;;
     debian) NEEDED_BUILD_PACKAGES=(nodejs npm python3 g++ make pkg-config libsystemd-dev libdrm-dev libcairo2-dev librsvg2-dev) ;;
     arch) NEEDED_BUILD_PACKAGES=(nodejs npm python gcc make pkgconf systemd libdrm cairo librsvg) ;;
+    gentoo) NEEDED_BUILD_PACKAGES=(net-libs/nodejs dev-lang/python sys-devel/gcc dev-build/make virtual/pkgconfig sys-apps/systemd x11-libs/libdrm x11-libs/cairo gnome-base/librsvg) ;;
     nix|unknown) NEEDED_BUILD_PACKAGES=() ;;
   esac
   if [[ "$WINDOW_BACKEND" == xorg ]]; then
@@ -364,6 +384,7 @@ detect_package_sets() {
       fedora) NEEDED_BACKEND_PACKAGES=(xprop) ;;
       debian) NEEDED_BACKEND_PACKAGES=(x11-utils) ;;
       arch) NEEDED_BACKEND_PACKAGES=(xorg-xprop) ;;
+      gentoo) NEEDED_BACKEND_PACKAGES=(x11-apps/xprop) ;;
     esac
   fi
   NEEDED_PACKAGES=("${NEEDED_BUILD_PACKAGES[@]}" "${NEEDED_RUNTIME_PACKAGES[@]}" "${NEEDED_BACKEND_PACKAGES[@]}")
@@ -383,7 +404,7 @@ detect_fedora_node_replacements() {
 check_node_version() {
   local version
   case "$PKG_MANAGER" in
-    dnf) return ;;
+    dnf|emerge) return ;;
     apt)
       version=$(apt-cache policy nodejs | awk '/Candidate:/ { print $2; exit }')
       [[ -n "$version" && "$version" != "(none)" ]] || fail "no Node.js candidate is available"
@@ -442,6 +463,11 @@ dry_run_packages() {
       ;;
     pacman)
       pacman -Sp --needed --print-format '%n' "${NEEDED_PACKAGES[@]}" >/dev/null ||
+        fail "the required package transaction cannot be resolved"
+      info "Package transaction resolved successfully"
+      ;;
+    emerge)
+      emerge -p --noreplace "${NEEDED_PACKAGES[@]}" >/dev/null ||
         fail "the required package transaction cannot be resolved"
       info "Package transaction resolved successfully"
       ;;
@@ -549,6 +575,7 @@ phase_purge() {
       dnf) sudo dnf remove -y "${ANALYSIS_CONFLICTING_PACKAGES[@]}" ;;
       apt) sudo apt-get purge -y "${ANALYSIS_CONFLICTING_PACKAGES[@]}" ;;
       pacman) sudo pacman -Rns --noconfirm "${ANALYSIS_CONFLICTING_PACKAGES[@]}" ;;
+      emerge) sudo emerge -C "${ANALYSIS_CONFLICTING_PACKAGES[@]}" ;;
     esac
     sudo systemctl daemon-reload
     systemctl --user daemon-reload
@@ -595,6 +622,7 @@ install_dependencies() {
       sudo apt-get install -y "${NEEDED_PACKAGES[@]}"
       ;;
     pacman) sudo pacman -Syu --needed --noconfirm "${NEEDED_PACKAGES[@]}" ;;
+    emerge) sudo emerge --noreplace "${NEEDED_PACKAGES[@]}" ;;
   esac
   command -v node >/dev/null 2>&1 || fail "Node.js is unavailable after package installation"
   command -v npm >/dev/null 2>&1 || fail "npm is unavailable after package installation"
