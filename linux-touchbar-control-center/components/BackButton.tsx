@@ -3,6 +3,7 @@ import { Button } from 'react-drm';
 import { MdCancel } from 'react-icons/md';
 import { useLayers } from '../layers';
 import type { LayerAnimation, SwitchOptions } from '../layers';
+import { ICON_SIZES } from '../config';
 
 export function BackButton({
   to = 'splitted',
@@ -21,7 +22,7 @@ export function BackButton({
       style={{ alignItems: 'center', justifyContent: 'center' }}
       onClick={() => go(to, switchOptions ?? animation)}
     >
-      <MdCancel style={{ width: 40, height: 40 }} fill="#cccccc" stroke="none" />
+      <MdCancel style={{ width: ICON_SIZES.backButton, height: ICON_SIZES.backButton }} fill="#cccccc" stroke="none" />
     </Button>
   );
 }

@@ -12,6 +12,7 @@ import {
 } from 'react-icons/md';
 import { BackButton } from '../components/BackButton';
 import { keys } from '../services/keyInjector';
+import { ICON_SIZES } from '../config';
 
 const KBD_ILLUM_DOWN_ICON = path.join(__dirname, '..', 'assets', 'kbd_illum_down.svg');
 const KBD_ILLUM_UP_ICON = path.join(__dirname, '..', 'assets', 'kbd_illum_up.svg');
@@ -50,7 +51,7 @@ function run(action: Action) {
 // ── Component ──────────────────────────────────────────────────────────────────
 
 const BTN_SIZE  = 60;
-const ICON_SIZE = 30;
+const ICON_SIZE = ICON_SIZES.mediaScreen;
 
 export function MediaScreen({ width, height }: { width: number; height: number }) {
   return (

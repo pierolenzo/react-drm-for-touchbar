@@ -20,10 +20,12 @@ import { LuDock } from 'react-icons/lu';
 import { BsWindowDock } from 'react-icons/bs';
 
 
+import { ICON_SIZES } from '../config';
+
 // ── Media control ─────────────────────────────────────────────────────────────
 
 
-const ICON_SIZE = 32;
+const ICON_SIZE = ICON_SIZES.splitted;
 
 type SplittedLeftLayerName = 'window' | 'browser' | 'konsole' | 'vlc' | 'dolphin' | 'mediaMprisList';
 

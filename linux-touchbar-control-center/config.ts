@@ -237,3 +237,111 @@ export const FN_LAYER = {
   mode:   'toggle' as 'hold' | 'toggle',
   longMs: 350,   // long-press duration when mode === 'toggle'
 };
+
+// ─── Icon Sizes ──────────────────────────────────────────────────────────────
+
+export const ICON_SIZES = {
+  // Common navigation / UI buttons
+  backButton: 52, // Back/Close button icon size (e.g. MdCancel) 42
+
+  // Main / Split default layer
+  splitted: 44, // Right-side quick action buttons (volume, brightness, dock, system info) 32
+
+  // Dedicated sub-screen layers
+  mediaScreen: 44,      // Controls in the full media controls screen 30
+  audioSlider: 40,      // Volume indicator icon next to the volume slider track 28
+  brightnessSlider: 40, // Keyboard and Display backlight indicator icons 28
+  games: 28,            // Game selection tiles (Dino, Piano, Pong) 28
+
+  // Left-side dynamic panel layers (contextual apps)
+  browser: 44,             // Browser panel buttons (back, forward, refresh, tabs, close) 32
+  konsole: 44,             // Terminal controls (tab switching, new tab, close) 32
+  dolphinMultiplier: 0.55, // Dolphin file manager actions (multiplier relative to display height)
+
+  // Media Player (MPRIS) lists and cards
+  mpris: {
+    controls: 44,                 // Playback control buttons (prev, play/pause, next) 38
+    vinylMultiplier: 0.9,         // Spinning vinyl record disc diameter (multiplier relative to display height)
+    collapsedIconMultiplier: 0.8, // App icon in the collapsed accordion tile (multiplier relative to display height)
+    expandedIconMultiplier: 0.8,  // App icon in the expanded player header (multiplier relative to display height)
+  },
+
+  // System Monitor & Stats Bar
+  systemBar: {
+    statTile: 38,  // Icons inside CPU, Memory, and Temperature monitoring tiles 26
+    netIcon: 22,   // Main adapter icon in the Network module 18
+    netArrows: 18, // Download/Upload rate arrow indicators 14
+    pomoReset: 44, // Reset button icon in the Pomodoro focus timer 38
+    pomoCircle: 44, // Progress ring SVG diameter in the Pomodoro focus timer 38
+  },
+} as const;
+
+// ─── Font Configuration ──────────────────────────────────────────────────────
+
+export const FONTS = {
+  // Centralized font families used across different panels
+  families: {
+    // Standard system monospaced font, used for:
+    // - Standalone main Clock component
+    // - On-screen virtual Esc key and Fn-key strip (F1-F12)
+    // - Media Player (MPRIS) lists
+    monospace:    'monospace',
+
+    // Nerd Font variant used for all standard UI labels, buttons, and text fields:
+    // - Sliders (audio & brightness), games selection panel, browser panel
+    // - Dolphin & Konsole contextual panel titles, buttons and logs
+    // - Clock date text and Pomodoro widget text/labels in the status bar
+    // - Vlc media player time trackers
+    nerdFont:     'IosevkaTerm Nerd Font',
+
+    // Monospaced Nerd Font variant, used in the status bar modules (CPU, Memory, Temp, Net rates)
+    // to ensure numerical digits and symbols align perfectly and do not jitter when values update
+    monoNerdFont: 'FiraCode Nerd Font Mono',
+  },
+  
+  // Centralized font sizes
+  sizes: {
+    clock: 34,      // Standalone main clock widget
+    escKey: 22,     // Fixed virtual Esc button on the far left
+    fnKeys: 24,     // Function keys (F1-F12 and Fn-row Esc)
+    games: 16,      // Game selection screen labels (Dino, Piano, Pong)
+
+    // Browser Panel
+    browser: {
+      closeConfirm: 14, // Confirm dialog text ("CLOSE?")
+    },
+
+    // Leftside dynamic panels
+    dolphin: {
+      waiting: 14,      // "waiting for D-Bus" placeholder text
+      places: 13,       // KDE Places quick-jump buttons
+    },
+    konsole: {
+      notRunning: 12,   // "not running" placeholder text
+      accentIndex: 11,  // Tab index status indicator (e.g. "1/3")
+      cmdIndicator: 11, // Prompt arrow indicator (e.g. "❯")
+      suggestion: 10,   // Terminal autocomplete command chips
+      status: 12,       // Live foreground command or cwd status text
+    },
+
+    // Media Player (MPRIS)
+    mpris: {
+      title: 18,  // Song/Video title text 15
+      artist: 15, // Artist/Uploader text 12
+    },
+
+    // System Monitor & Stats Bar (systemBar)
+    systemBar: {
+      cpuMemTemp: 22,   // Percentage and degrees value (e.g. "45%")
+      netRates: 15,     // Rx/Tx upload/download transfer rates (e.g. "120K")
+      clockTime: 28,    // Standalone clock hour/minute (e.g. "14:35") 20
+      clockDate: 18,    // Standalone clock date text (e.g. "Mon, Oct 12") 14
+      pomoTime: 28,     // Pomodoro timer remaining count (MM:SS)
+      pomoLabel: 18,    // Pomodoro status label (e.g. "focus", "paused")
+      pomoState: 18,    // General label status
+      statLabel: 17,    // System stats label (CPU, MEM, TEMP, UPTIME)
+    },
+  },
+} as const;
+
+
