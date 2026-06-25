@@ -50,8 +50,8 @@ function buildVinylSvg(size: number, accent: string, artUri: string | null): str
 // Spinning vinyl. The disc is a static cached SVG; the rotation is a real Box
 // transform (style.rotate, degrees) driven by a looping spring — only while the
 // track is playing. Paused → the spring stops and the angle holds.
-function Vinyl({ size, accent, artUrl, spinning }: { size: number; accent: string; artUrl: string; spinning: boolean }) {
-  const artUri = useAlbumArt(artUrl || undefined);
+function Vinyl({ size, accent, artUrl, videoUrl, spinning }: { size: number; accent: string; artUrl: string; videoUrl?: string; spinning: boolean }) {
+  const artUri = useAlbumArt(artUrl || undefined, videoUrl);
   const spin   = useSpringValue(0);
 
   useEffect(() => {
@@ -174,7 +174,7 @@ function AccordionItem({ player, isSel, expandedW, collapsedW, height, onSelect 
             
           <Box style={{ height , width:vinylSz , position:"absolute",zIndex:2 ,alignItems:"center"}}>
 
-          <Vinyl size={height-2} accent={color} artUrl={player.state.artUrl} spinning={playing}  />
+          <Vinyl size={height-2} accent={color} artUrl={player.state.artUrl} videoUrl={player.state.url} spinning={playing}  />
           </Box>
               {fillW > 0 && <Box style={{ position: 'absolute', left: vinylSz/2, top: 0, width: fillW - (vinylSz/2), height: barH, backgroundColor: color }} />}
               <Box style={{ marginLeft: vinylSz, position: 'absolute', left: 0, top: 0, width: barW - (vinylSz), height: barH, flexDirection: 'column', justifyContent: 'center', paddingLeft: 10, paddingRight: 10,zIndex:-1 }}>
@@ -190,9 +190,9 @@ function AccordionItem({ player, isSel, expandedW, collapsedW, height, onSelect 
         // wrapper above is accent-tinted (full-bleed) so this tile stands out;
         // the button itself stays transparent so that fill shows through.
         <Button width={collapsedW - 12} height={height} color="transparent" activeColor="#1e293b" onClick={onSelect} style={{ alignItems: 'center', justifyContent: 'center', borderRadius: 6 }}>
-          {icon
-            ? <Svg src={icon} width={iconBox} height={iconBox} style={{ width: iconBox, height: iconBox }} />
-            : <Vinyl size={vinylSz} accent={color} artUrl={player.state.artUrl} spinning={playing} />}
+          {(player.state.artUrl || player.state.url?.includes('youtube.com') || player.state.url?.includes('youtu.be'))
+            ? <Vinyl size={vinylSz} accent={color} artUrl={player.state.artUrl} videoUrl={player.state.url} spinning={playing} />
+            : (icon ? <Svg src={icon} width={iconBox} height={iconBox} style={{ width: iconBox, height: iconBox }} /> : null)}
         </Button>
       )}
     </animated.Box>

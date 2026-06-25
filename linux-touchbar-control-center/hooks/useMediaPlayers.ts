@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import dbus, { MessageBus, Variant } from 'dbus-next';
+import { resolveArt } from '../services/albumArtResolver';
 
 // Spotify and Firefox expose native MPRIS2 services. Chrome itself has no
 // native MPRIS2 service on Linux; on KDE Plasma the
@@ -29,6 +30,8 @@ export interface MediaPlayerState {
   position: number;
   /** Current track object path (MPRIS `mpris:trackid`), needed for SetPosition. */
   trackId: string;
+  /** Original track URL, e.g. xesam:url */
+  url?: string;
 }
 
 export interface MediaPlayer {
@@ -48,15 +51,15 @@ export interface MediaPlayer {
   seek(positionUs: number): void;
 }
 
-const IDLE: MediaPlayerState = { title: '', artist: '', status: 'Stopped', artUrl: '', length: 0, position: 0, trackId: '' };
+const IDLE: MediaPlayerState = { title: '', artist: '', status: 'Stopped', artUrl: '', length: 0, position: 0, trackId: '', url: '' };
 
-function readMeta(meta: Record<string, Variant> | undefined): Pick<MediaPlayerState, 'title' | 'artist' | 'artUrl' | 'length' | 'trackId'> {
+function readMeta(meta: Record<string, Variant> | undefined): Pick<MediaPlayerState, 'title' | 'artist' | 'artUrl' | 'length' | 'trackId' | 'url'> {
   const m = meta ?? {};
   const artistRaw = m['xesam:artist']?.value;
+  const xesamUrl = m['xesam:url']?.value as string | undefined;
   let title = (m['xesam:title']?.value as string) ?? '';
-  if (!title) {
-    const url = m['xesam:url']?.value as string | undefined;
-    const base = url?.split('/').pop();
+  if (!title && xesamUrl) {
+    const base = xesamUrl.split('/').pop();
     if (base) { try { title = decodeURIComponent(base); } catch { title = base; } }
   }
   return {
@@ -66,6 +69,7 @@ function readMeta(meta: Record<string, Variant> | undefined): Pick<MediaPlayerSt
     // mpris:length is an int64 → dbus-next gives a BigInt; coerce to Number (µs).
     length: Number(m['mpris:length']?.value ?? 0),
     trackId: (m['mpris:trackid']?.value as string) ?? '',
+    url: xesamUrl ?? '',
   };
 }
 
@@ -140,10 +144,19 @@ export function useMediaPlayers(): UseMediaPlayersResult {
             const all = await props.GetAll(PLAYER) as Record<string, Variant>;
             if (!alive) return;
             const meta = all.Metadata?.value as Record<string, Variant> | undefined;
+            const parsedMeta = readMeta(meta);
+
+            if (parsedMeta.artUrl) {
+              try {
+                parsedMeta.artUrl = await resolveArt(parsedMeta.artUrl, parsedMeta.url);
+              } catch {}
+            }
+
+            if (!alive) return;
             setStates(prev => ({
               ...prev,
               [service]: {
-                ...readMeta(meta),
+                ...parsedMeta,
                 status: (all.PlaybackStatus?.value as PlayerStatus) ?? 'Stopped',
                 position: Number(all.Position?.value ?? 0),
               },
@@ -151,18 +164,51 @@ export function useMediaPlayers(): UseMediaPlayersResult {
           } catch { /* player closed */ }
         };
 
-        props.on('PropertiesChanged', (iface: string, changed: Record<string, Variant>) => {
+        props.on('PropertiesChanged', async (iface: string, changed: Record<string, Variant>) => {
           if (!alive || iface !== PLAYER) return;
-          setStates(prev => {
-            const current = prev[service] ?? IDLE;
-            const next: MediaPlayerState = { ...current };
-            if (changed.PlaybackStatus) next.status = changed.PlaybackStatus.value as PlayerStatus;
-            if (changed.Metadata) {
-              Object.assign(next, readMeta(changed.Metadata.value as Record<string, Variant>));
-              next.position = 0; // new track → restart the progress bar
+          
+          if (changed.Metadata) {
+            const rawMeta = changed.Metadata.value as Record<string, Variant>;
+            const meta = readMeta(rawMeta);
+
+            if (meta.artUrl) {
+              try {
+                meta.artUrl = await resolveArt(meta.artUrl, meta.url);
+              } catch {}
             }
-            return { ...prev, [service]: next };
-          });
+
+            if (!alive) return;
+            setStates(prev => {
+              const current = prev[service] ?? IDLE;
+              const next: MediaPlayerState = { ...current };
+              if (changed.PlaybackStatus) next.status = changed.PlaybackStatus.value as PlayerStatus;
+              
+              const prevArt = next.artUrl;
+              const prevTrack = next.trackId;
+              const prevTitle = next.title;
+              const prevUrl = next.url;
+
+              Object.assign(next, meta);
+
+              // Preserve artUrl and url if they are omitted in this update but the track is the same
+              if (!next.artUrl && prevArt && (next.trackId === prevTrack || next.title === prevTitle)) {
+                next.artUrl = prevArt;
+              }
+              if (!next.url && prevUrl && (next.trackId === prevTrack || next.title === prevTitle)) {
+                next.url = prevUrl;
+              }
+
+              next.position = 0; // new track → restart the progress bar
+              return { ...prev, [service]: next };
+            });
+          } else {
+            setStates(prev => {
+              const current = prev[service] ?? IDLE;
+              const next: MediaPlayerState = { ...current };
+              if (changed.PlaybackStatus) next.status = changed.PlaybackStatus.value as PlayerStatus;
+              return { ...prev, [service]: next };
+            });
+          }
         });
 
         // Position is not push-notified: a Seeked signal covers jumps, and a 1s
