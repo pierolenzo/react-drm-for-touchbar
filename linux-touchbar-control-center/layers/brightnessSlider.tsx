@@ -5,6 +5,7 @@ import { Box, Text, Button } from 'react-drm';
 import { MdBrightness4, MdBrightness6, MdBrightness7, MdKeyboard } from 'react-icons/md';
 import { BackButton } from '../components/BackButton';
 import { useLayers } from './index';
+import { ICON_SIZES, FONTS } from '../config';
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -98,7 +99,7 @@ function BrightnessControl({
     <Box style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
       <Box style={{ width: 92, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
         {icon}
-        <Text style={{ fontSize: 13, color: '#64748b', fontFamily: 'IosevkaTerm Nerd Font' }}>{label}</Text>
+        <Text style={{ fontSize: 13, color: '#64748b', fontFamily: FONTS.families.nerdFont }}>{label}</Text>
       </Box>
 
       <Button
@@ -120,7 +121,7 @@ function BrightnessControl({
         <Track fill={value} color={color} />
       </Button>
 
-      <Text style={{ width: 52, fontSize: 18, color: '#94a3b8', fontFamily: 'IosevkaTerm Nerd Font' }}>
+      <Text style={{ width: 52, fontSize: FONTS.sizes.systemBar.pomoLabel, color: '#94a3b8', fontFamily: FONTS.families.nerdFont }}>
         {`${Math.round(value * 100)}%`}
       </Text>
     </Box>
@@ -195,7 +196,7 @@ export function BrightnessSliderLayer({ width, height }: { width: number; height
           label="KEYS"
           value={keyboardBrightness}
           color="#7dd3fc"
-          icon={<MdKeyboard style={{ width: 28, height: 28 }} fill="#7dd3fc" stroke="none" />}
+          icon={<MdKeyboard style={{ width: ICON_SIZES.brightnessSlider, height: ICON_SIZES.brightnessSlider }} fill="#7dd3fc" stroke="none" />}
           dragRef={keyboardDrag}
           onChange={updateKeyboard}
           onInteractionStart={clearHideTimer}
@@ -205,7 +206,7 @@ export function BrightnessSliderLayer({ width, height }: { width: number; height
           label="DISPLAY"
           value={displayBrightness}
           color="#fbbf24"
-          icon={<DisplayIcon style={{ width: 28, height: 28 }} fill="#fbbf24" stroke="none" />}
+          icon={<DisplayIcon style={{ width: ICON_SIZES.brightnessSlider, height: ICON_SIZES.brightnessSlider }} fill="#fbbf24" stroke="none" />}
           dragRef={displayDrag}
           onChange={updateDisplay}
           onInteractionStart={clearHideTimer}

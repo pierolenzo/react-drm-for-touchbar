@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Text } from 'react-drm';
+import { FONTS } from '../config';
 
 export function Clock({ x }: { x: number }) {
   const [time, setTime] = useState(new Date().toLocaleTimeString());
@@ -10,7 +11,7 @@ export function Clock({ x }: { x: number }) {
   }, []);
 
   return (
-    <Text x={x} y={12} color="#facc15" fontSize={34} fontFamily="monospace">
+    <Text x={x} y={12} color="#facc15" fontSize={FONTS.sizes.clock} fontFamily={FONTS.families.monospace}>
       {time}
     </Text>
   );

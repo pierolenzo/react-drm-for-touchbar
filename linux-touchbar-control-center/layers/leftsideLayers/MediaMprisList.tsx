@@ -7,14 +7,13 @@ import {
 import { useMediaPlayers } from '../../hooks/useMediaPlayers';
 import { useAlbumArt } from '../../hooks/useAlbumArt';
 import { appIconSource } from '../../services/appIcon';
+import { ICON_SIZES, FONTS } from '../../config';
 
 const ACCENT: Record<string, string> = {
   firefox: '#f9731666',
   spotify: '#1db95466',
   chrome:  '#4285f466',
 };
-
-const FONT = '';
 
 // Build the vinyl record as one cached SVG: black disc, a few groove rings, the
 // album art clipped to a circle (when present), a colored center label and the
@@ -102,10 +101,10 @@ function AccordionItem({ player, isSel, expandedW, collapsedW, height, onSelect 
   useEffect(() => { w.start(isSel ? expandedW : collapsedW); }, [isSel, expandedW, collapsedW, w]);
 
   const color   = ACCENT[player.name] ?? '#666';
-  const iconSz  = 38;
-  const vinylSz   = Math.round(height * 0.9);
-  const iconBox   = Math.round(height*0.8);  // collapsed tile app icon
-  const appIconSz = Math.round(height*0.8 ); // app icon shown in expanded row
+  const iconSz  = ICON_SIZES.mpris.controls;
+  const vinylSz   = Math.round(height * ICON_SIZES.mpris.vinylMultiplier);
+  const iconBox   = Math.round(height * ICON_SIZES.mpris.collapsedIconMultiplier);
+  const appIconSz = Math.round(height * ICON_SIZES.mpris.expandedIconMultiplier);
   const playing = player.state.status === 'Playing';
   const PlayIcon = playing ? MdPause : MdPlayArrow;
   const icon    = iconSrcFor(player.name);
@@ -179,8 +178,8 @@ function AccordionItem({ player, isSel, expandedW, collapsedW, height, onSelect 
           </Box>
               {fillW > 0 && <Box style={{ position: 'absolute', left: vinylSz/2, top: 0, width: fillW - (vinylSz/2), height: barH, backgroundColor: color }} />}
               <Box style={{ marginLeft: vinylSz, position: 'absolute', left: 0, top: 0, width: barW - (vinylSz), height: barH, flexDirection: 'column', justifyContent: 'center', paddingLeft: 10, paddingRight: 10,zIndex:-1 }}>
-                <Text  color="#fff" fontSize={15} fontFamily={FONT}>{player.state.title || 'Unknown'}</Text>
-                <Text color="#cbd5e1" fontSize={12} fontFamily={FONT}>{player.state.artist}</Text>
+                <Text color="#fff" fontSize={FONTS.sizes.mpris.title} fontFamily={FONTS.families.monospace}>{player.state.title || 'Unknown'}</Text>
+                <Text color="#cbd5e1" fontSize={FONTS.sizes.mpris.artist} fontFamily={FONTS.families.monospace}>{player.state.artist}</Text>
               </Box>
             </Box>
           </Button>
@@ -211,7 +210,7 @@ export function MediaMprisList({ width, height }: { width: number; height: numbe
   if (players.length === 0) {
     return (
       <Box style={{ flex: 1, flexDirection: 'row', alignItems: 'center', paddingLeft: 8 }}>
-        <Text color="#94a3b8" fontSize={14} fontFamily={FONT}>
+        <Text color="#94a3b8" fontSize={14} fontFamily={FONTS.families.nerdFont}>
           No media players
         </Text>
       </Box>

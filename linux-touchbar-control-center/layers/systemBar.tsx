@@ -10,7 +10,7 @@ import { Box, Text, Button, LayoutContext, NativeDrawContext, DisplaySizeContext
 import type { BoxNode } from 'react-drm';
 import { MdArrowDownward, MdArrowUpward, MdCancel, MdDeveloperBoard, MdDeviceHub, MdMemory, MdReplay, MdRouter, MdThermostat, MdWhatshot, MdWifi } from 'react-icons/md';
 import type { IconType } from 'react-icons';
-import { CAVA, SYSTEMBAR } from '../config';
+import { CAVA, SYSTEMBAR, ICON_SIZES, FONTS } from '../config';
 import { useLayers } from './index';
 import { BackButton } from '../components/BackButton';
 
@@ -212,12 +212,12 @@ function Sep() {
 
 // Accent label (the small dim prefix like "CPU", "MEM")
 function Label({ children }: { children: string }) {
-  return <Text style={{ color: '#cccccc', fontSize: 17, fontFamily: 'FiraCode Nerd Font Mono' }}>{children}</Text>;
+  return <Text style={{ color: '#cccccc', fontSize: FONTS.sizes.systemBar.statLabel, fontFamily: FONTS.families.monoNerdFont }}>{children}</Text>;
 }
 
 // Main value text
 function Val({ children, color = '#cccccc' }: { children:string; color?: string }) {
-  return <Text style={{ color, fontSize: 22, fontFamily: 'FiraCode Nerd Font Mono' }}>{children}</Text>;
+  return <Text style={{ color, fontSize: FONTS.sizes.systemBar.cpuMemTemp, fontFamily: FONTS.families.monoNerdFont }}>{children}</Text>;
 }
 
 // Thin inline bar (polybar ramp-like)
@@ -250,8 +250,8 @@ function StatTile({ icon: Icon, value, color }: {
       paddingHorizontal: 20, alignSelf: 'stretch', width: 150,
       justifyContent: 'center',
     }}>
-      <Icon style={{ width: 26, height: 26 }} fill={color} stroke="none" />
-      <Text style={{ color, fontSize: 22, fontFamily: 'FiraCode Nerd Font Mono' }}>{value}</Text>
+      <Icon style={{ width: ICON_SIZES.systemBar.statTile, height: ICON_SIZES.systemBar.statTile }} fill={color} stroke="none" />
+      <Text style={{ color, fontSize: FONTS.sizes.systemBar.cpuMemTemp, fontFamily: FONTS.families.monoNerdFont }}>{value}</Text>
     </Box>
   );
 }
@@ -303,7 +303,7 @@ function NetMod({ rx, tx, iface, rxHist, txHist }: { rx: number; tx: number; ifa
       alignSelf: 'stretch',
       width: 266,
     }}>
-      <NetIcon x={16} y={4} style={{ width: 18, height: 18 }} fill="#cbd5e1" stroke="none" />
+      <NetIcon x={16} y={4} style={{ width: ICON_SIZES.systemBar.netIcon, height: ICON_SIZES.systemBar.netIcon }} fill="#cbd5e1" stroke="none" />
       <svg width={chartW} height={chartH} viewBox={`0 0 ${chartW} ${chartH}`}>
         <rect x={0} y={0} width={chartW} height={chartH} rx={3} fill="#000" />
         <rect x={0} y={chartH - 5} width={chartW} height={2} rx={1} fill="#1e293b" />
@@ -314,13 +314,13 @@ function NetMod({ rx, tx, iface, rxHist, txHist }: { rx: number; tx: number; ifa
       </svg>
       <Box style={{ gap: 1,flexDirection:"column" }}>
         <Box style={{ flexDirection: 'row', alignItems: 'center', gap: 2 }}>
-          <MdArrowDownward style={{ width: 14, height: 14 }} fill="#7dd3fc" stroke="none" />
-          <Text style={{ color: '#7dd3fc', fontSize: 15, fontFamily: 'FiraCode Nerd Font Mono' }}>{fmtRate(rxValue)}</Text>
+          <MdArrowDownward style={{ width: ICON_SIZES.systemBar.netArrows, height: ICON_SIZES.systemBar.netArrows }} fill="#7dd3fc" stroke="none" />
+          <Text style={{ color: '#7dd3fc', fontSize: FONTS.sizes.systemBar.netRates, fontFamily: FONTS.families.monoNerdFont }}>{fmtRate(rxValue)}</Text>
 
         </Box>
         <Box style={{ flexDirection: 'row', alignItems: 'center', gap: 2 }}>
-          <MdArrowUpward style={{ width: 14, height: 14 }} fill="#fdba74" stroke="none" />
-          <Text style={{ color: '#fdba74', fontSize: 15, fontFamily: 'FiraCode Nerd Font Mono' }}>{fmtRate(txValue)}</Text>
+          <MdArrowUpward style={{ width: ICON_SIZES.systemBar.netArrows, height: ICON_SIZES.systemBar.netArrows }} fill="#fdba74" stroke="none" />
+          <Text style={{ color: '#fdba74', fontSize: FONTS.sizes.systemBar.netRates, fontFamily: FONTS.families.monoNerdFont }}>{fmtRate(txValue)}</Text>
         </Box>
       </Box>
     </Box>
@@ -458,8 +458,8 @@ function ClockMod({ time }: { time: Date }) {
       gap: 6,
  
     }}>
-      <Text style={{ color: '#fde68a', fontSize: 20, fontFamily: 'IosevkaTerm Nerd Font' }}>{hh}</Text>
-      <Text style={{ color: '#94a3b8', fontSize: 14, fontFamily: 'IosevkaTerm Nerd Font' }}>{dd}</Text>
+      <Text style={{ color: '#fde68a', fontSize: FONTS.sizes.systemBar.clockTime, fontFamily: FONTS.families.nerdFont }}>{hh}</Text>
+      <Text style={{ color: '#94a3b8', fontSize: FONTS.sizes.systemBar.clockDate, fontFamily: FONTS.families.nerdFont }}>{dd}</Text>
     </Box>
   );
 }
@@ -600,7 +600,7 @@ function PomodoroSection() {
     <Box style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 2, gap: 8 }}>
       <Button  onClick={toggle} color="transparent" activeColor="#1e293b"
          style={{ alignItems: 'center', justifyContent: 'center' , gap: 8 }}>
-        <svg width={38} height={38} viewBox="0 0 38 38">
+        <svg width={ICON_SIZES.systemBar.pomoCircle} height={ICON_SIZES.systemBar.pomoCircle} viewBox="0 0 38 38">
           <circle cx={19} cy={19} r={POMO_R} fill="none" stroke="#1e293b" strokeWidth={3} />
           <circle cx={19} cy={19} r={POMO_R} fill="none"
             stroke={ringColor} strokeWidth={3}
@@ -609,8 +609,8 @@ function PomodoroSection() {
             transform="rotate(-90 19 19)"
           />
         </svg>
-      <Text style={{ fontSize: 28, color: timeColor, fontFamily: 'IosevkaTerm Nerd Font' }}>{display}</Text>
-      <Text style={{ fontSize: 18, color: labelColor, fontFamily: 'IosevkaTerm Nerd Font' }}>{label}</Text>
+      <Text style={{ fontSize: FONTS.sizes.systemBar.pomoTime, color: timeColor, fontFamily: FONTS.families.nerdFont }}>{display}</Text>
+      <Text style={{ fontSize: FONTS.sizes.systemBar.pomoLabel, color: labelColor, fontFamily: FONTS.families.nerdFont }}>{label}</Text>
       </Button>
       {/* <Box style={{ flexDirection: 'row', gap: 5 }}>
         {([0,1,2,3] as const).map(i => (
@@ -620,8 +620,8 @@ function PomodoroSection() {
       </Box> */}
       {(running || elapsed > 0) && (
         <Button onClick={reset}  color='transparent' activeColor="#1e293b"
-          width={38} height={38} style={{ alignItems: 'center', justifyContent: 'center' }}>
-          <MdReplay style={{ width: 38, height: 38 }} fill="#475569" stroke="none" />
+          width={ICON_SIZES.systemBar.pomoReset} height={ICON_SIZES.systemBar.pomoReset} style={{ alignItems: 'center', justifyContent: 'center' }}>
+          <MdReplay style={{ width: ICON_SIZES.systemBar.pomoReset, height: ICON_SIZES.systemBar.pomoReset }} fill="#475569" stroke="none" />
         </Button>
       )}
     </Box>

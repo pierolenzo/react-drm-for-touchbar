@@ -6,6 +6,7 @@ import {
   MdCreateNewFolder, MdTerminal, MdDelete, MdFolder,
 } from 'react-icons/md';
 import { useDolphin } from '../../hooks/useDolphin';
+import { ICON_SIZES, FONTS } from '../../config';
 
 const ACCENT   = '#1d99f3'; // KDE blue
 const DIM      = '#94a3b8';
@@ -18,13 +19,13 @@ const CHIP_W = 140;
 export function DolphinPanel({ width, height }: { width: number; height: number }) {
   const { connected, state, places, trigger, openDir } = useDolphin();
 
-  const ICON_SZ = Math.round(height * 0.55);
+  const ICON_SZ = Math.round(height * ICON_SIZES.dolphinMultiplier);
 
   if (!connected) {
     return (
       <Box style={{ flex: 1, flexDirection: 'row', alignItems: 'center', paddingLeft: 8, gap: 10 }}>
         <Box style={{ width: 3, height: 34, borderRadius: 10, backgroundColor: ACCENT }} />
-        <Text color={DIM} fontSize={14} fontFamily="IosevkaTerm Nerd Font">
+        <Text color={DIM} fontSize={FONTS.sizes.dolphin.waiting} fontFamily={FONTS.families.nerdFont}>
           Dolphin — waiting for D-Bus…
         </Text>
       </Box>
@@ -105,7 +106,7 @@ export function DolphinPanel({ width, height }: { width: number; height: number 
           onClick={() => openDir(p.path)}
         >
           <MdFolder style={{ width: 18, height: 18 }} fill={ACCENT} stroke="none" />
-          <Text color="#cccccc" fontSize={13} fontFamily="IosevkaTerm Nerd Font">{p.title}</Text>
+          <Text color="#cccccc" fontSize={FONTS.sizes.dolphin.places} fontFamily={FONTS.families.nerdFont}>{p.title}</Text>
         </Button>
       ))}
 

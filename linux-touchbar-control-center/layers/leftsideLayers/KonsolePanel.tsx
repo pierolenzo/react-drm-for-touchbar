@@ -1,9 +1,10 @@
-  import React from 'react';
+import React from 'react';
 import { Box, Button, Text } from 'react-drm';
 import {
   MdAdd, MdClose, MdChevronLeft, MdChevronRight,
 } from 'react-icons/md';
 import { useKonsole } from '../../hooks/useKonsole';
+import { ICON_SIZES, FONTS } from '../../config';
 
 const GREEN  = '#22c55e';
 const ORANGE = '#f97316';
@@ -19,7 +20,7 @@ export function KonsolePanel({ width, height }: { width: number; height: number 
     newTab, closeTab, nextTab, prevTab, sendSuggestion,
   } = useKonsole();
 
-  const ICON_SZ   =32;
+  const ICON_SZ   = ICON_SIZES.konsole;
   const DOT_SZ    = 8;
   const middleW   = Math.round(width * 0.65);
 
@@ -43,7 +44,7 @@ export function KonsolePanel({ width, height }: { width: number; height: number 
   if (!connected) {
     return (
       <Box style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-        <Text color={DIM} fontSize={12} fontFamily="IosevkaTerm Nerd Font">
+        <Text color={DIM} fontSize={FONTS.sizes.konsole.notRunning} fontFamily={FONTS.families.nerdFont}>
           Konsole not running
         </Text>
       </Box>
@@ -63,7 +64,7 @@ export function KonsolePanel({ width, height }: { width: number; height: number 
         <MdChevronLeft style={{ width: ICON_SZ, height: ICON_SZ }} fill={GREEN} stroke="none" />
       </Btn>
       <Box style={{ width: 40, alignItems: 'center', justifyContent: 'center' }}>
-        <Text color="#fff" fontSize={11} fontFamily="IosevkaTerm Nerd Font">
+        <Text color="#fff" fontSize={FONTS.sizes.konsole.accentIndex} fontFamily={FONTS.families.nerdFont}>
           {tabCount > 0 ? `${activeTabIdx + 1}/${tabCount}` : '–'}
         </Text>
       </Box>
@@ -77,7 +78,7 @@ export function KonsolePanel({ width, height }: { width: number; height: number 
       {suggestions.length > 0 ? (
         <Box style={{ width: middleW, overflow: 'scroll', flexDirection: 'row'}}>
           <Box style={{ width: ICON_BOX_W, alignItems: 'center', justifyContent: 'center' }}>
-            <Text color={PURPLE} fontSize={11} fontFamily="IosevkaTerm Nerd Font">❯</Text>
+            <Text color={PURPLE} fontSize={FONTS.sizes.konsole.cmdIndicator} fontFamily={FONTS.families.nerdFont}>❯</Text>
           </Box>
           {suggestions.map((s, i) => {
             const accent = s.execute ? PURPLE : GREEN;
@@ -89,7 +90,7 @@ export function KonsolePanel({ width, height }: { width: number; height: number 
                 style={{ width: CHIP_RENDER_W, borderRadius: 6, alignItems: 'center', justifyContent: 'center', marginRight: CHIP_GAP }}
                 onClick={() => sendSuggestion(s)}
               >
-                <Text color={accent} fontSize={10} fontFamily="IosevkaTerm Nerd Font">
+                <Text color={accent} fontSize={FONTS.sizes.konsole.suggestion} fontFamily={FONTS.families.nerdFont}>
                   {s.cmd.length > 20 ? s.cmd.slice(0, 20) + '…' : s.cmd}
                 </Text>
               </Button>
@@ -99,7 +100,7 @@ export function KonsolePanel({ width, height }: { width: number; height: number 
       ) : (
         <Box style={{ width: middleW, flexDirection: 'row', alignItems: 'center', gap: 6, paddingLeft: 8 }}>
           <Box style={{ width: DOT_SZ, height: DOT_SZ, borderRadius: DOT_SZ / 2, backgroundColor: dotColor }} />
-          <Text color={dotColor} fontSize={12} fontFamily="IosevkaTerm Nerd Font">
+          <Text color={dotColor} fontSize={FONTS.sizes.konsole.status} fontFamily={FONTS.families.nerdFont}>
             {statusText || '…'}
           </Text>
         </Box>

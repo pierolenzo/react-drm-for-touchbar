@@ -3,9 +3,9 @@ import { Box, Text, Button, LayoutContext } from 'react-drm';
 import type { BoxNode } from 'react-drm';
 import { MdPlayArrow, MdPause } from 'react-icons/md';
 import { useVlc } from '../../hooks/useVlc';
+import { FONTS } from '../../config';
 
 const ORANGE = '#fb923c';
-const FONT = 'IosevkaTerm Nerd Font';
 
 /** Microseconds → hh:mm:ss (zero-padded hours). */
 function hms(us: number): string {
@@ -75,7 +75,7 @@ export function VlcPanel({ width, height }: { width: number; height: number }) {
       </Button>
 
       <Box style={{ width: TIME_W, alignItems: 'center', justifyContent: 'center' }}>
-        <Text color="#cbd5e1" fontSize={16} fontFamily={FONT}>{hms(shownUs)}</Text>
+        <Text color="#cbd5e1" fontSize={FONTS.sizes.games} fontFamily={FONTS.families.nerdFont}>{hms(shownUs)}</Text>
       </Box>
 
       {/* Recessed track (full height − 16), small corners, real inset shadow
@@ -96,7 +96,7 @@ export function VlcPanel({ width, height }: { width: number; height: number }) {
       </Button>
 
       <Box style={{ width: TIME_W, alignItems: 'center', justifyContent: 'center' }}>
-        <Text color="#cbd5e1" fontSize={16} fontFamily={FONT}>{hms(lengthUs)}</Text>
+        <Text color="#cbd5e1" fontSize={FONTS.sizes.games} fontFamily={FONTS.families.nerdFont}>{hms(lengthUs)}</Text>
       </Box>
     </Box>
   );

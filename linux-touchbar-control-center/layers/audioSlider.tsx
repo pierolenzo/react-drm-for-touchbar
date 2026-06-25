@@ -4,6 +4,7 @@ import { Box, Text, Button } from 'react-drm';
 import { MdVolumeOff, MdVolumeDown, MdVolumeUp } from 'react-icons/md';
 import { BackButton } from '../components/BackButton';
 import { useLayers } from './index';
+import { ICON_SIZES, FONTS } from '../config';
 
 // When running as root the session socket isn't inherited — pass it explicitly.
 const PW_ENV: NodeJS.ProcessEnv = {
@@ -146,8 +147,8 @@ export function AudioSliderLayer({ width, height }: { width: number; height: num
       <Sep />
 
       <Box style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-        <VolumeIcon style={{ width: 28, height: 28 }} fill={iconColor} stroke="none" />
-        <Text style={{ fontSize: 13, color: '#64748b', fontFamily: 'IosevkaTerm Nerd Font' }}>VOLUME</Text>
+        <VolumeIcon style={{ width: ICON_SIZES.audioSlider, height: ICON_SIZES.audioSlider }} fill={iconColor} stroke="none" />
+        <Text style={{ fontSize: 13, color: '#64748b', fontFamily: FONTS.families.nerdFont }}>VOLUME</Text>
       </Box>
 
       <Button
@@ -167,7 +168,7 @@ export function AudioSliderLayer({ width, height }: { width: number; height: num
         <Track fill={vol} color="#38bdf8" />
       </Button>
 
-      <Text style={{ width: 52, fontSize: 18, color: '#94a3b8', fontFamily: 'IosevkaTerm Nerd Font' }}>
+      <Text style={{ width: 52, fontSize: FONTS.sizes.systemBar.pomoLabel, color: '#94a3b8', fontFamily: FONTS.families.nerdFont }}>
         {`${Math.round(vol * 100)}%`}
       </Text>
     </Box>

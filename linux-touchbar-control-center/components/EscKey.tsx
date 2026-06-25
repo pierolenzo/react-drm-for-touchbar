@@ -1,6 +1,7 @@
 import React from 'react';
 import { Box, Text, Button, KEY } from 'react-drm';
 import { keys } from '../services/keyInjector';
+import { FONTS } from '../config';
 
 /**
  * On-screen Esc key for wide Touch Bars that have no physical Esc.
@@ -23,7 +24,7 @@ export function EscKey({ width, height }: { width: number; height: number }) {
         }}
         onClick={() => keys.pressKey(KEY.ESC)}
       >
-        <Text  fontSize={22} fontFamily="monospace" style={{ fontWeight: '700' }}>esc</Text>
+        <Text  fontSize={FONTS.sizes.escKey} fontFamily={FONTS.families.monospace} style={{ fontWeight: '700' }}>esc</Text>
       </Button>
     </Box>
   );

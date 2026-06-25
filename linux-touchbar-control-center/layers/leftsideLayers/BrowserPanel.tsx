@@ -6,6 +6,7 @@ import {
 } from 'react-icons/md';
 import { useActiveWindow } from '../../hooks/useActiveWindow';
 import { useBrowserKeys } from '../../hooks/useBrowserKeys';
+import { ICON_SIZES, FONTS } from '../../config';
 
 const DIM       = '#cccccc';
 const CLOSE_CLR = '#f87171';
@@ -19,9 +20,10 @@ export function BrowserPanel({ width, height }: { width: number; height: number 
   const { class: windowClass } = useActiveWindow();
   const { back, forward, reload, home, newTab, closeTab, prevTab, nextTab } = useBrowserKeys(windowClass);
   const [confirmClose, setConfirmClose] = useState(false);
+
   const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const ICON_SZ = 32;
+  const ICON_SZ = ICON_SIZES.browser;
 
   useEffect(() => () => {
     if (closeTimer.current) clearTimeout(closeTimer.current);
@@ -115,7 +117,7 @@ export function BrowserPanel({ width, height }: { width: number; height: number 
           {confirmClose ? (
             <Box style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 4 }}>
               <MdCheck style={{ width: 24, height: 24 }} fill="#fff" stroke="none" />
-              <Text color="#fff" fontSize={14} fontFamily="IosevkaTerm Nerd Font">CLOSE?</Text>
+              <Text color="#fff" fontSize={FONTS.sizes.browser.closeConfirm} fontFamily={FONTS.families.nerdFont}>CLOSE?</Text>
             </Box>
           ) : (
             <MdClose style={{ width: ICON_SZ, height: ICON_SZ }} fill={CLOSE_CLR} stroke="none" />
